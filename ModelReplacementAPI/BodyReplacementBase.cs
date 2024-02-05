@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Rendering;
+using MoreCompany.Cosmetics;
 
 namespace ModelReplacement
 {
@@ -17,7 +18,6 @@ namespace ModelReplacement
         //Base components
         public AvatarUpdater avatar { get; private set; }
         public ViewStateManager viewState = null;
-        public MoreCompanyCosmeticManager cosmeticManager = null;
         public MaterialHelper materialHelper = null;
         public PlayerControllerB controller { get; private set; }
         public GameObject replacementModel;
@@ -246,13 +246,6 @@ namespace ModelReplacement
                 avatar.AssignViewModelReplacement(controller.gameObject, replacementViewModel);
             }
             
-
-
-            if (ModelReplacementAPI.moreCompanyPresent)
-            {
-                cosmeticManager = new MoreCompanyCosmeticManager(this);
-            }
-            
             SetAvatarRenderers(true);
             viewState.ReportBodyReplacementAddition(this);
 
@@ -296,7 +289,7 @@ namespace ModelReplacement
                 Destroy(replacementDeadBody);
                 replacementDeadBody = null;
             }
-            if(deadBody && !deadBody.activeInHierarchy)
+            if (deadBody && !deadBody.activeInHierarchy)
             {
                 replacementDeadBody.SetActive(false);
             }
@@ -304,10 +297,7 @@ namespace ModelReplacement
             // Update replacement models
             avatar.Update();
             ragdollAvatar.Update();
-            if (ModelReplacementAPI.moreCompanyPresent)
-            {
-                cosmeticManager.Update(true);
-            }
+
 
             //Bounding box calculation for nameTag
             Bounds modelBounds = GetBounds();
@@ -338,18 +328,12 @@ namespace ModelReplacement
         }
 
 
-
         protected virtual void OnDestroy()
         {
             ModelReplacementAPI.Instance.Logger.LogInfo($"Destroy body component for {controller.playerUsername}");
             Destroy(replacementModel);
             Destroy(replacementViewModel);
             Destroy(replacementDeadBody);
-            if (ModelReplacementAPI.moreCompanyPresent)
-            {
-                cosmeticManager.Update(false);
-            }
-            
         }
 
         #endregion
